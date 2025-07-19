@@ -21,6 +21,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
+    "express-handlebars": "^8.0.3",
     "mysql2": "^3.14.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
