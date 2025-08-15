@@ -1,24 +1,57 @@
 const http = require('http');
-const path = require('path');
 const express = require('express');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const publicPath = path.join(__dirname, './public')
+const db = require(path.join(publicPath, '/services/database.js'));
 const port = 3000;
 
+// Basic requirements and vars
+
+// Setting up the server and essential settings
 let app = express();
 let server = http.createServer(app);
+app.use(express.static(publicPath)); // Serves static files from ./public. These are files like CSS styles.
+app.use(express.urlencoded({extended: true})); // Allows use of req.body
 
-const {engine} = require('express-handlebars');
-app.engine("handlebars", engine());
-app.set("view engine", "handlebars");
-app.set("views", "./views");
+// Using Express Handlebars to serve files
+const {engine} = require('express-handlebars'); // Get handlebars
+app.engine("handlebars", engine()); // Make express use handlebars
+app.set("view engine", "handlebars"); 
+app.set("views", "./views"); // Use the "views" folder to find layouts etc.
 
-app.use('/', (req, res) => {
+
+/// RESOURCES ^ ///
+
+app.get('/', (req, res) => {
     res.render("home");
     console.log('A new visitor :D');
 })
 
 app.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
 
+    const playerWithUsername = await db.getPlayerByUsername(username);
 
+    if (playerWithUsername === undefined) { // Non-existent user
+        res.render("home", {loginerror: "There is no user with that username."})
+
+    } else if (playerWithUsername.suspension !== undefined) { // Handles suspended users
+        res.render("home", {loginerror: "That account has been suspended: " + playerWithUsername.suspension})
+
+    } else if (await bcrypt.compare(password, playerWithUsername.password_hash)) { // Successful login
+        db.unfailLogin(username);
+        res.render("lobby")
+
+    } else { // Handles users inputing the wrong password. 5 incorrect logins suspends the account.
+        db.failLogin(username);
+
+        if (playerWithUsername.failed_logins > 3) {
+            db.suspendUser("Failed to enter password 5 times.", username)
+        }
+        res.render()
+    }
 })
 
 
