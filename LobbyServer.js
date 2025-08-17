@@ -32,12 +32,14 @@ app.post('/login', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
+    console.log(username, password);
+
     const playerWithUsername = await db.getPlayerByUsername(username);
 
     if (playerWithUsername === undefined) { // Non-existent user
         res.render("loginPage", {loginerror: "There is no user with that username."})
 
-    } else if (playerWithUsername.suspension !== undefined) { // Handles suspended users
+    } else if (playerWithUsername.suspension !== null) { // Handles suspended users
         res.render("loginPage", {loginerror: "That account has been suspended: " + playerWithUsername.suspension})
 
     } else if (await bcrypt.compare(password, playerWithUsername.password_hash)) { // Successful login
@@ -55,8 +57,10 @@ app.post('/login', async (req, res) => {
 })
 
 app.post('/createAccount', async (req, res) => {
-    let username = req.query.username;
-    let password = req.query.password;
+    let username = req.body.username;
+    let password = req.body.password;
+
+    console.log(username, password);
 
     if(await db.getPlayerByUsername(username) === undefined) {
         const saltRounds = 10;
@@ -64,6 +68,8 @@ app.post('/createAccount', async (req, res) => {
         const hash = await bcrypt.hash(password, saltRounds);
 
         const newUser = await db.createUser(username, hash)
+
+        res.render("lobby");
     } else {
         res.render("loginPage", {signupError: "There's already a user with that username."})
     }

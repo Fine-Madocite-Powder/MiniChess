@@ -41,7 +41,7 @@ async function failLogin (username) {
     const failedLogins = player.failed_logins + 1;
     try {
     const [updatedUser] = await connection.execute('UPDATE delve_users SET failed_logins = ? WHERE username = ?', [failedLogins, username]);
-    return rows[0];
+
     } finally {
         await connection.end();
     }
@@ -53,7 +53,8 @@ async function unfailLogin (username) {
     try {
     const [updatedUser] = await connection.execute('UPDATE delve_users SET failed_logins = 0 WHERE username = ?', [username]);
     return rows[0];
-        } finally {
+
+    } finally {
         await connection.end();
     }
 }
