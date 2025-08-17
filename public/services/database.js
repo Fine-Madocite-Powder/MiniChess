@@ -14,8 +14,8 @@ function connect () {
 async function getPlayerByUsername (username) {
     let connection = await connect()
     try {
-    const [rows] = await connection.execute('SELECT * FROM delve_users WHERE username = ?', [username]);
-    return rows[0];
+    const [selectPlayer] = await connection.execute('SELECT * FROM delve_users WHERE username = ?', [username]);
+    return selectPlayer[0];
     } finally {
         await connection.end();
     }
@@ -41,7 +41,7 @@ async function failLogin (username) {
     const failedLogins = player.failed_logins + 1;
     try {
     const [updatedUser] = await connection.execute('UPDATE delve_users SET failed_logins = ? WHERE username = ?', [failedLogins, username]);
-
+    return updatedUser[0];
     } finally {
         await connection.end();
     }
@@ -52,7 +52,7 @@ async function unfailLogin (username) {
     
     try {
     const [updatedUser] = await connection.execute('UPDATE delve_users SET failed_logins = 0 WHERE username = ?', [username]);
-    return rows[0];
+    return updatedUser[0];
 
     } finally {
         await connection.end();
@@ -64,7 +64,7 @@ async function suspendUser (reason, username) {
 
     try {
     const [updatedUser] = await connection.execute('UPDATE delve_users SET suspension = ? WHERE username = ?', [reason, username]);
-    return rows[0];    
+    return updatedUser[0];    
     } finally {
         await connection.end();
     }

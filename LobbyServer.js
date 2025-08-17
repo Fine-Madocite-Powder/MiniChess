@@ -25,26 +25,26 @@ app.set("views", "./views"); // Use the "views" folder to find layouts etc.
 
 app.get('/', (req, res) => {
     res.render("loginPage");
-    console.log('A new visitor :D');
 })
 
 app.post('/login', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    console.log(username, password);
-
     const playerWithUsername = await db.getPlayerByUsername(username);
+    console.log(playerWithUsername.password_hash);
 
     if (playerWithUsername === undefined) { // Non-existent user
-        res.render("loginPage", {loginerror: "There is no user with that username."})
+        res.render("loginPage", {loginerror: "There is no user with that username."});
 
     } else if (playerWithUsername.suspension !== null) { // Handles suspended users
-        res.render("loginPage", {loginerror: "That account has been suspended: " + playerWithUsername.suspension})
+        res.render("loginPage", {loginerror: "That account has been suspended: " + playerWithUsername.suspension});
+
 
     } else if (await bcrypt.compare(password, playerWithUsername.password_hash)) { // Successful login
         db.unfailLogin(username);
-        res.render("lobby")
+        res.render("lobby");
+
 
     } else { // Handles users inputing the wrong password. 5 incorrect logins suspends the account.
         db.failLogin(username);
@@ -56,16 +56,19 @@ app.post('/login', async (req, res) => {
     }
 })
 
+
+/// Create an account for user ///
 app.post('/createAccount', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
+    console.log("Created user:");
     console.log(username, password);
 
     if(await db.getPlayerByUsername(username) === undefined) {
-        const saltRounds = 10;
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(password, saltRounds);
+
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
 
         const newUser = await db.createUser(username, hash)
 
@@ -73,10 +76,6 @@ app.post('/createAccount', async (req, res) => {
     } else {
         res.render("loginPage", {signupError: "There's already a user with that username."})
     }
-
-
-    
-
 })
 
 
