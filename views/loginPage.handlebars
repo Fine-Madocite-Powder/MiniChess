@@ -1,0 +1,30 @@
+<p>Hi, this is the home page :)))))))))</p>
+
+Log in here:
+<form action="/login" method="post">
+    Username
+    <input type="text" name="username" required>
+    Password:
+    <input type="password" name="password" required>
+
+    <input type="submit" value="Log In">
+    {{#if loginerror}}
+    <p>{{loginerror}}</p>
+    {{/if}}
+
+</form>
+<br><br>
+
+If you don't have an account, create one here:
+<form action="/createAccount" method="post">
+    Username
+    <input type="text" name="username" required>
+    Password:
+    <input type="password" name="password" required>
+
+    <input type="submit" value="Log In">
+    {{#if signupError}}
+    <p>{{signupError}}</p>
+    {{/if}}
+
+</form>

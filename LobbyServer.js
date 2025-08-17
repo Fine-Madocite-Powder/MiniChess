@@ -24,7 +24,7 @@ app.set("views", "./views"); // Use the "views" folder to find layouts etc.
 /// RESOURCES ^ ///
 
 app.get('/', (req, res) => {
-    res.render("home");
+    res.render("loginPage");
     console.log('A new visitor :D');
 })
 
@@ -35,10 +35,10 @@ app.post('/login', async (req, res) => {
     const playerWithUsername = await db.getPlayerByUsername(username);
 
     if (playerWithUsername === undefined) { // Non-existent user
-        res.render("home", {loginerror: "There is no user with that username."})
+        res.render("loginPage", {loginerror: "There is no user with that username."})
 
     } else if (playerWithUsername.suspension !== undefined) { // Handles suspended users
-        res.render("home", {loginerror: "That account has been suspended: " + playerWithUsername.suspension})
+        res.render("loginPage", {loginerror: "That account has been suspended: " + playerWithUsername.suspension})
 
     } else if (await bcrypt.compare(password, playerWithUsername.password_hash)) { // Successful login
         db.unfailLogin(username);
@@ -50,8 +50,27 @@ app.post('/login', async (req, res) => {
         if (playerWithUsername.failed_logins > 3) {
             db.suspendUser("Failed to enter password 5 times.", username)
         }
-        res.render()
+        res.render("loginPage", {loginError: "That account has been suspended to protect it from malicious actors."})
     }
+})
+
+app.post('/createAccount', async (req, res) => {
+    let username = req.query.username;
+    let password = req.query.password;
+
+    if(await db.getPlayerByUsername(username) === undefined) {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, saltRounds);
+
+        const newUser = await db.createUser(username, hash)
+    } else {
+        res.render("loginPage", {signupError: "There's already a user with that username."})
+    }
+
+
+    
+
 })
 
 
