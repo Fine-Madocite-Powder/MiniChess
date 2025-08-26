@@ -1,0 +1,36 @@
+body {
+    margin:0;
+}
+
+#full {
+    background-color: aqua;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: flex;
+    flex-direction: row;
+}
+
+#left-hand-side {
+    width: calc(70vw - 5px);
+    color: white;
+    display:flex;
+    flex-direction:column;
+}
+
+#user-info-div {
+    height: calc(30vh - 6px);
+    background-color:black;
+    margin-bottom: 4px;
+}
+
+#loadout-guide {
+    height: calc(70vh - 6px);
+    background-color: grey;
+}
+
+#play-and-banner {
+    width: calc(30vw - 5px);
+    height: calc(100vh - 8px);
+    margin-left: 10px;
+    background-color: white; 
+}

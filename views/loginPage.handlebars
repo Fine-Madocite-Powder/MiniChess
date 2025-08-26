@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="/styles/login.css">
+
+
 <p>Hi, this is the home page :)))))))))</p>
 
 Log in here:
@@ -9,7 +12,7 @@ Log in here:
 
     <input type="submit" value="Log In">
     {{#if loginerror}}
-    <p>{{loginerror}}</p>
+    <p class="error">{{loginerror}}</p>
     {{/if}}
 
 </form>
@@ -24,7 +27,7 @@ If you don't have an account, create one here:
 
     <input type="submit" value="Log In">
     {{#if signupError}}
-    <p>{{signupError}}</p>
+    <p class="error">{{signupError}}</p>
     {{/if}}
 
 </form>
